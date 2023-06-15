@@ -24,8 +24,12 @@ def send_command(command):
     ser.write(command.encode())
     # Mettre à jour l'état de la porte en fonction de la commande envoyée
     if command == "1":
+        door_state = 'transit'
+        time.sleep(1.5)
         door_state = 'open'
     elif command == "2":
+        door_state = 'transit'
+        time.sleep(1.5)
         door_state = 'closed'
     update_state_label()
 
@@ -35,6 +39,8 @@ def update_state_label():
         state_label.config(text="État de la porte: Ouverte")
     elif door_state == 'closed':
         state_label.config(text="État de la porte: Fermée")
+    elif door_state == 'transit':
+        state_label.config(text="État de la porte: En transit...")
     else:
         state_label.config(text="État de la porte: Inconnu")
 
@@ -65,6 +71,16 @@ def send_command_2():
         print("Commande 2 envoyée")
     else:
         print("Erreur: La porte est déjà fermée")
+
+
+def send_command_3():
+    global door_state
+    send_command("3")
+    print("Calibrage en cours ...")
+    time.sleep(2)
+    door_state = 'open'
+    update_state_label()
+    print("Porte calibrée !")
 
 
 # Fonction pour planifier l'envoi de commandes
@@ -101,6 +117,9 @@ manual_open.pack(side="left", padx=20, pady=20)
 # Bouton pour fermer manuellement
 manual_close = ttk.Button(bottom_frame, text="Fermer (Sens anti-horaire)", command=send_command_2, width=button_width)
 manual_close.pack(side="right", padx=20, pady=20)
+
+calibrate = ttk.Button(bottom_frame, text="Calibrer", command=send_command_3, width=button_width)
+calibrate.pack(side="right", padx=20, pady=20)
 
 
 # Créer une fonction pour vérifier les tâches planifiées
